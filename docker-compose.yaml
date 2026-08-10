@@ -1,0 +1,77 @@
+version: '3.8'
+
+services:
+  # --- Metadata DB pour Airflow lui-même ---
+  airflow_postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: airflow
+      POSTGRES_PASSWORD: airflow
+      POSTGRES_DB: airflow
+    volumes:
+      - airflow_pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "airflow"]
+      interval: 5s
+      retries: 5
+
+  # --- Votre Data Warehouse local ---
+  dwh_postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: ${DWH_DB_USER}
+      POSTGRES_PASSWORD: ${DWH_DB_PASSWORD}
+      POSTGRES_DB: ${DWH_DB_NAME}
+    ports:
+      - "5434:5432"   # accessible depuis votre machine hôte aussi (ex: DBeaver)
+    volumes:
+      - dwh_pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "${DWH_DB_USER}"]
+      interval: 5s
+      retries: 5
+
+  airflow:
+    image: apache/airflow:2.9.3-python3.11
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      airflow_postgres:
+        condition: service_healthy
+      dwh_postgres:
+        condition: service_healthy
+    environment:
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@airflow_postgres/airflow
+      AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
+      AIRFLOW__WEBSERVER__EXPOSE_CONFIG: 'true'
+      _AIRFLOW_WWW_USER_USERNAME: admin
+      _AIRFLOW_WWW_USER_PASSWORD: admin
+      # Variables réutilisées par nos scripts d'extraction
+      SOURCE_DB_HOST: ${SOURCE_DB_HOST}
+      SOURCE_DB_PORT: ${SOURCE_DB_PORT}
+      SOURCE_DB_NAME: ${SOURCE_DB_NAME}
+      SOURCE_DB_USER: ${SOURCE_DB_USER}
+      SOURCE_DB_PASSWORD: ${SOURCE_DB_PASSWORD}
+      DWH_DB_HOST: ${DWH_DB_HOST}
+      DWH_DB_PORT: ${DWH_DB_PORT}
+      DWH_DB_NAME: ${DWH_DB_NAME}
+      DWH_DB_USER: ${DWH_DB_USER}
+      DWH_DB_PASSWORD: ${DWH_DB_PASSWORD}
+    volumes:
+      - ./dags:/opt/airflow/dags
+      - ./elt/extract:/opt/airflow/extract
+      - ./logs:/opt/airflow/logs
+      - ./plugins:/opt/airflow/plugins
+      - ./requirements.txt:/opt/airflow/requirements.txt
+    ports:
+      - "8081:8080"
+    command: >
+      bash -c "pip install --no-cache-dir -r /opt/airflow/requirements.txt &&
+               airflow db migrate &&
+               airflow users create --username admin --password admin --firstname Fleuria --lastname Admin --role Admin --email admin@esofa.local || true &&
+               airflow standalone"
+
+volumes:
+  airflow_pg_data:
+  dwh_pg_data:
