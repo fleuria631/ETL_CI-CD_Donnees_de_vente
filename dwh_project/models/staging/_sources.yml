@@ -1,0 +1,11 @@
+version: 2
+
+sources:
+  - name: dwh
+    schema: raw
+    tables:
+      - name: categories
+      - name: customers
+      - name: products
+      - name: sales_orders
+      - name: sales_order_items
