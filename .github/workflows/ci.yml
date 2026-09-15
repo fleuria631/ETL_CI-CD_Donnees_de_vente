@@ -1,61 +1,65 @@
 name: Pipeline CI
 
 on:
-    push:
-     branches: [ "main", "master" ]
-    pull_request:
-     branches: [ "main", "master" ]
-    
-jobs:
-      lint-python:
-        name: Lint Python (Ruff)
-        runs-on: ubuntu-latest
-        steps:
-          - name: Récupérer le code
-            uses: actions/checkout@v4
-    
-          - name: Installer Python
-            uses: actions/setup-python@v5
-            with:
-              python-version: '3.11'
-    
-          - name: Installer Ruff
-            run: pip install ruff
-    
-          - name: Lancer l'analyse Ruff
-            run: ruff check .
-    
-      check-dbt:
-        name: Check Syntaxe dbt
-        runs-on: ubuntu-latest
-        steps:
-          - name: Récupérer le code
-            uses: actions/checkout@v4
-    
-          - name: Installer Python
-            uses: actions/setup-python@v5
-            with:
-              python-version: '3.11'
-    
-          - name: Installer dbt
-            run: pip install dbt-postgres
-    
-          - name: Créer un faux profil dbt
-            run: |
-              mkdir -p ~/.dbt
-              echo "dwh_project:
-                target: dev
-                outputs:
-                  dev:
-                    type: postgres
-                    host: localhost
-                    user: user
-                    password: password
-                    port: 5432
-                    dbname: db
-                    schema: public
-              " > ~/.dbt/profiles.yml
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
 
-          - name: Lancer dbt parse
-            working-directory: ./dwh_project
-            run: dbt parse
+jobs:
+  lint-python:
+    name: Lint Python (Ruff)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Récupérer le code
+        uses: actions/checkout@v4
+
+      - name: Installer Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Installer Ruff
+        run: pip install ruff
+
+      - name: Lancer l'analyse Ruff
+        run: ruff check .
+
+  check-dbt:
+    name: Check Syntaxe dbt
+    runs-on: ubuntu-latest
+    steps:
+      - name: Récupérer le code
+        uses: actions/checkout@v4
+
+      - name: Installer Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Installer dbt
+        run: pip install dbt-postgres
+
+      - name: Créer un faux profil dbt
+        run: |
+          mkdir -p ~/.dbt
+          echo "dwh_project:
+            target: dev
+            outputs:
+              dev:
+                type: postgres
+                host: localhost
+                user: user
+                password: password
+                port: 5432
+                dbname: db
+                schema: public
+          " > ~/.dbt/profiles.yml
+
+      - name: Installer les dépendances dbt
+        working-directory: ./dwh_project
+        run: dbt deps
+
+      - name: Lancer dbt parse
+        working-directory: ./dwh_project
+        run: dbt parse
