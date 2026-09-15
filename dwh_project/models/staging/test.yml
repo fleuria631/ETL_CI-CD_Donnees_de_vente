@@ -1,0 +1,82 @@
+version: 2
+    
+models:
+      - name: stg_categories
+        description: "Modèle staging pour les catégories."
+        columns:
+          - name: category_id
+            description: "Clé primaire."
+            tests:
+              - unique
+              - not_null
+          - name: category_name
+            tests:
+              - not_null
+    
+      - name: stg_customers
+        description: "Modèle staging pour les clients."
+        columns:
+          - name: customer_id
+            description: "Clé primaire."
+            tests:
+              - unique
+              - not_null
+    
+      - name: stg_products
+        description: "Modèle staging pour les produits."
+        columns:
+          - name: product_id
+            description: "Clé primaire."
+            tests:
+              - unique
+              - not_null
+          - name: category_id
+            description: "Clé étrangère vers stg_categories."
+            tests:
+              - relationships:
+                  to: ref('stg_categories')
+                  field: category_id
+          - name: product_name
+            tests:
+              - not_null
+    
+      - name: stg_sales_orders
+        description: "Modèle staging pour les commandes de vente."
+        columns:
+          - name: sales_order_id
+            description: "Clé primaire."
+            tests:
+              - unique
+              - not_null
+          - name: customer_id
+            description: "Clé étrangère vers stg_customers."
+            tests:
+              - relationships:
+                  to: ref('stg_customers')
+                  field: customer_id
+          - name: total_amount
+            tests:
+              - not_null
+
+      - name: stg_sales_order_items
+        description: "Modèle staging pour les lignes de commande."
+        columns:
+          - name: sales_order_item_id
+            description: "Clé primaire."
+            tests:
+              - unique
+              - not_null
+          - name: sales_order_id
+            description: "Clé étrangère vers stg_sales_orders."
+            tests:
+              - not_null
+              - relationships:
+                  to: ref('stg_sales_orders')
+                  field: sales_order_id
+          - name: product_id
+            description: "Clé étrangère vers stg_products."
+            tests:
+              - not_null
+              - relationships:
+                  to: ref('stg_products')
+                  field: product_id

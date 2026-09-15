@@ -19,6 +19,7 @@ print(f"   LANG: {os.environ.get('LANG', 'non défini')}")
 # 2. Vérifier le chargement des variables d'env
 print("\n2️⃣  VARIABLES D'ENVIRONNEMENT:")
 from pathlib import Path
+
 from dotenv import load_dotenv
 
 env_path = Path(__file__).resolve().parent / ".env"
@@ -30,11 +31,11 @@ if env_path.exists():
     with open(env_path, 'r', encoding='utf-8') as f:
         lines = f.readlines()
     
-    print(f"   Contenu du .env (premieres lignes):")
+    print("   Contenu du .env (premieres lignes):")
     for line in lines[:10]:
         if '=' in line and not line.startswith('#'):
             key, value = line.strip().split('=', 1)
-            print(f"      {key} = {repr(value)}")
+            print(f"      {key} = {value!r}")
 
 # 3. Charger les variables avec dotenv
 load_dotenv(dotenv_path=env_path)
@@ -46,11 +47,11 @@ password = os.getenv('DWH_DB_PASSWORD')
 port = os.getenv('DWH_DB_PORT')
 dbname = os.getenv('DWH_DB_NAME')
 
-print(f"   DWH_DB_HOST: {repr(host)} (type: {type(host).__name__})")
-print(f"   DWH_DB_USER: {repr(user)} (type: {type(user).__name__})")
-print(f"   DWH_DB_PASSWORD: {repr(password)} (type: {type(password).__name__})")
-print(f"   DWH_DB_PORT: {repr(port)} (type: {type(port).__name__})")
-print(f"   DWH_DB_NAME: {repr(dbname)} (type: {type(dbname).__name__})")
+print(f"   DWH_DB_HOST: {host!r} (type: {type(host).__name__})")
+print(f"   DWH_DB_USER: {user!r} (type: {type(user).__name__})")
+print(f"   DWH_DB_PASSWORD: {password!r} (type: {type(password).__name__})")
+print(f"   DWH_DB_PORT: {port!r} (type: {type(port).__name__})")
+print(f"   DWH_DB_NAME: {dbname!r} (type: {type(dbname).__name__})")
 
 # 4. Construire l'URL et vérifier l'encodage
 print("\n4️⃣  CONSTRUCTION URL DE CONNEXION:")
@@ -67,8 +68,8 @@ print("\n5️⃣  TEST DE DÉCODAGE:")
 try:
     url_bytes = url.encode('utf-8')
     url_decoded = url_bytes.decode('utf-8')
-    print(f"   ✅ URL peut être encodée/décodée en UTF-8")
-    print(f"   Byte à position 103: {repr(url_bytes[103:110] if len(url_bytes) > 103 else 'N/A')}")
+    print("   ✅ URL peut être encodée/décodée en UTF-8")
+    print(f"   Byte à position 103: {url_bytes[103:110] if len(url_bytes) > 103 else 'N/A'!r}")
 except Exception as e:
     print(f"   ❌ Erreur: {e}")
 
@@ -87,7 +88,7 @@ try:
     
     with engine.connect() as conn:
         result = conn.execute("SELECT 1")
-        print(f"   ✅ Connexion SQLAlchemy réussie!")
+        print("   ✅ Connexion SQLAlchemy réussie!")
 except Exception as e:
     print(f"   ❌ Erreur SQLAlchemy: {e}")
     import traceback
@@ -106,7 +107,7 @@ try:
         password=password,
         client_encoding='UTF8'
     )
-    print(f"   ✅ Connexion psycopg2 réussie!")
+    print("   ✅ Connexion psycopg2 réussie!")
     conn.close()
 except Exception as e:
     print(f"   ❌ Erreur psycopg2: {e}")

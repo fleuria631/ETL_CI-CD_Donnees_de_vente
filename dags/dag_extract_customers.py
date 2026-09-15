@@ -3,16 +3,15 @@ DAG minimal : extraction de la table `customers` depuis esofa
 vers le DWH local.
 """
 
+import sys
 from datetime import datetime
 
 from airflow import DAG
 from airflow.operators.python import PythonOperator
 
-import sys
 sys.path.insert(0, "/opt/airflow/extract")
 
 from extract_customers import main as extract_customers_main
-
 
 default_args = {
     "owner": "fleuria",

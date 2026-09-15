@@ -2,8 +2,9 @@
 """
 Test de connexion à PostgreSQL DWH
 """
-import psycopg2
 import sys
+
+import psycopg2
 
 try:
     print("🔍 Tentative de connexion à PostgreSQL...")

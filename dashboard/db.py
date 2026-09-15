@@ -1,13 +1,15 @@
 import os
+
 os.environ["LC_ALL"] = "C"
 os.environ["LANG"] = "C"
 
 from pathlib import Path
+
+import pandas as pd
+import streamlit as st
 from dotenv import load_dotenv
 from sqlalchemy import create_engine, event
 from sqlalchemy.pool import QueuePool
-import pandas as pd
-import streamlit as st
 
 # .env est à la racine du projet, un niveau au-dessus de dashboard/
 env_path = Path(__file__).resolve().parent.parent / ".env"
@@ -24,8 +26,9 @@ def get_engine():
     port = os.getenv('DWH_DB_PORT')
 
     # Le dashboard tourne sur Windows (hors Docker) : il faut réécrire
-    # le host/port internes au réseau Docker vers ceux exposés sur l'hôte.
-    if host == 'dwh_postgres':
+    # le host/port internes au réseau Docker vers ceux exposés sur l'hôte,
+    # sauf si on tourne explicitement dans un conteneur (IN_DOCKER=1).
+    if host == 'dwh_postgres' and not os.getenv('IN_DOCKER'):
         host = 'localhost'
         port = '5434'  # port exposé côté hôte (mapping "5434:5432" dans docker-compose)
 

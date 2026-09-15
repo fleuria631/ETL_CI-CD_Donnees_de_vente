@@ -4,16 +4,15 @@ vers le DWH local. Une seule tâche pour valider le pattern
 avant de l'étendre aux autres tables (products, customers, sales_orders, ...).
 """
 
+import sys
 from datetime import datetime
 
 from airflow import DAG
 from airflow.operators.python import PythonOperator
 
-import sys
 sys.path.insert(0, "/opt/airflow/extract")
 
 from extract_categories import main as extract_categories_main
-
 
 default_args = {
     "owner": "fleuria",

@@ -3,16 +3,15 @@ DAG minimal : extraction de la table `products` depuis esofa
 vers le DWH local.
 """
 
+import sys
 from datetime import datetime
 
 from airflow import DAG
 from airflow.operators.python import PythonOperator
 
-import sys
 sys.path.insert(0, "/opt/airflow/extract")
 
 from extract_products import main as extract_products_main
-
 
 default_args = {
     "owner": "fleuria",

@@ -4,8 +4,9 @@ vers le Data Warehouse local (staging), en mode full-refresh
 (on vide et on recharge à chaque exécution — le plus simple pour démarrer).
 """
 
-import os
 import logging
+import os
+
 import psycopg2
 import psycopg2.extras
 

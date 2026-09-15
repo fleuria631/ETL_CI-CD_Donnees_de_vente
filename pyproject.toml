@@ -1,0 +1,17 @@
+  [tool.ruff]
+    # On exclut les environnements virtuels ou dossiers inutiles
+    exclude = [
+        ".git",
+        "venv",
+        "__pycache__"
+    ]
+    
+    [tool.ruff.lint]
+    # On ignore les règles spécifiques qui restent
+    ignore = [
+        "DTZ001", # datetime sans fuseau horaire
+        "C408",   # appel à dict()
+        "BLE001", # except Exception
+        "RUF015", # slice [0] au lieu de next()
+        "RUF046"  # int() inutile
+    ]

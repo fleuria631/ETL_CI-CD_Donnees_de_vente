@@ -4,17 +4,16 @@ Deux tâches séquentielles : sales_orders puis sales_order_items
 (les items dépendent logiquement des commandes, donc on les enchaîne).
 """
 
+import sys
 from datetime import datetime
 
 from airflow import DAG
 from airflow.operators.python import PythonOperator
 
-import sys
 sys.path.insert(0, "/opt/airflow/extract")
 
-from extract_sales_orders import main as extract_sales_orders_main
 from extract_sales_order_items import main as extract_sales_order_items_main
-
+from extract_sales_orders import main as extract_sales_orders_main
 
 default_args = {
     "owner": "fleuria",

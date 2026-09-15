@@ -3,8 +3,9 @@ Extraction de la table `customers` depuis la base source `esofa`
 vers le Data Warehouse local (staging), en mode full-refresh.
 """
 
-import os
 import logging
+import os
+
 import psycopg2
 import psycopg2.extras
 

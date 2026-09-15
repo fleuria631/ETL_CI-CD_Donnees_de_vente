@@ -1,0 +1,2 @@
+[tool.streamlit.components]
+"streamlit-shadcn-ui.v2" = { asset_dir = "C:/Users/Fleuria/AppData/Local/Programs/Python/Python312/Lib/site-packages/streamlit_shadcn_ui/frontend_v2/dist" }
