@@ -1,14 +1,12 @@
- name: Pipeline CI
+name: Pipeline CI
+
+on:
+    push:
+     branches: [ "main", "master" ]
+    pull_request:
+     branches: [ "main", "master" ]
     
-    # Quand déclencher ce pipeline ?
-    on:
-      push:
-        branches: [ "main", "master" ]
-      pull_request:
-        branches: [ "main", "master" ]
-        
-    jobs:
-      # Job 1 : Vérification du code Python
+jobs:
       lint-python:
         name: Lint Python (Ruff)
         runs-on: ubuntu-latest
@@ -27,7 +25,6 @@
           - name: Lancer l'analyse Ruff
             run: ruff check .
     
-      # Job 2 : Vérification de la syntaxe dbt
       check-dbt:
         name: Check Syntaxe dbt
         runs-on: ubuntu-latest
@@ -43,8 +40,7 @@
           - name: Installer dbt
             run: pip install dbt-postgres
     
-          - name: Créer un faux profil dbt pour la vérification
-            # dbt a besoin d'un profil même pour juste vérifier la syntaxe
+          - name: Créer un faux profil dbt
             run: |
               mkdir -p ~/.dbt
               echo "dwh_project:
@@ -59,7 +55,7 @@
                     dbname: db
                     schema: public
               " > ~/.dbt/profiles.yml
-    
-          - name: Lancer dbt parse (Vérification de syntaxe)
+
+          - name: Lancer dbt parse
             working-directory: ./dwh_project
             run: dbt parse
